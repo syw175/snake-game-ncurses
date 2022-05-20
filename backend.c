@@ -8,3 +8,10 @@
 
 #include<stdio.h> 
 
+// LinkedList structure for snake from https://www.geeksforgeeks.org/linked-list-set-1-introduction/
+class Node {
+public:
+    int data;
+    Node* next;
+};
+
