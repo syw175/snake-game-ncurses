@@ -15,3 +15,31 @@ public:
     Node* next;
 };
 
+
+
+
+void moveUp() { 
+    if (snake.direction != down) { 
+        //change direction
+    }
+}
+
+void moveDown() { 
+    if (snake.direction != down) { 
+        //change direction
+    }
+}
+
+void moveLeft() { 
+    if (snake.direction != left) { 
+        //change direction
+    }
+}
+
+void moveRight() { 
+    if (snake.direction != right) { 
+        //change direction
+    }
+}
+
+//

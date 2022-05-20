@@ -9,6 +9,16 @@
 #include <stdio.h> 
 #include <ncurses.h>
 
+// Print menu with the following options: Start game, how to play, high scores 
+
+// Print menu of how to play: Move snake with the arrow keys, Eat the food to grow, Eat the apple to double speed temporarily for 30s and grow events are doubled 
+
+
+// Print high scores: Retro style just like in the old arcades 
+
+
+
+
 // WINDOW * win = newwin(25, 25, 0, 0)  // nlines, ncols, y0, x0
 
 
@@ -22,3 +32,9 @@ int main(void) {
 
    return 0;
 }
+
+// Draw fruit items randomly within the screen 
+
+
+
+// Draw Bonus Item Sportically within the screen 

@@ -12,26 +12,4 @@
 int currentScore = 0;
 int gameTime = 0;  // Could also use some sort of date object will have to see 
 
-void moveUp() { 
-    if (snake.direction != down) { 
-        //change direction
-    }
-}
-
-void moveDown() { 
-    if (snake.direction != down) { 
-        //change direction
-    }
-}
-
-void moveLeft() { 
-    if (snake.direction != left) { 
-        //change direction
-    }
-}
-
-void moveRight() { 
-    if (snake.direction != right) { 
-        //change direction
-    }
-}
+// create new instance of the game
