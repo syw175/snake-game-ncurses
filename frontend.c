@@ -3,11 +3,9 @@
    Date last modified: May 19, 2022
 */
 
-// will include all the drawing of the snake game onto terminal using the ncurses library 
 // ncurses documentation ----->>>>> https://jbwyatt.com/ncurses.html#using
 
 // To Do
-// Print menu with the following options: Start game, how to play, high scores 
 // Print menu of how to play: Move snake with the arrow keys, Eat the food to grow, Eat the apple to double speed temporarily for 30s and grow events are doubled 
 // Print high scores: Retro style just like in the old arcades 
 // Draw fruit items randomly within the screen 
@@ -22,10 +20,6 @@
    // move the cursor to the specified location, taking 2 parameters y, then x 
    // move(20, 20);  // 
 
-   // prints a string (const char *) to a window 
-   // printw("Hello World");
-
-   // moveprint : combines move and print together into one command
    // mvprintw(0, 0, "hello");
 
    // get current yx coordinate. Takes parameter of window, and two variables to place the information getyx(stdscr, int y, int x);
@@ -49,31 +43,37 @@
    // }
 
 
+   // halfdelay(int tenths of sec) -> prevents infinite buffering for getch(); returns -1 or ERR if no input is given...
+
+
 void mainMenu() { 
 
    // Ncurses start 
    clear();
    initscr();  // initialize ncurses, sets up memory, and clears the screen
    noecho();   // character from input will not show up 
-   cbreak();  
+   cbreak();   // removes input buffer, ctrl + c to exit
+   curs_set(0);  // Hide insertion point from the user
 
    // Get dimensions of screen
    int screenX, screenY;  
    getmaxyx(stdscr, screenY, screenX);
 
    // Initialize game board
-   mvprintw(screenY/3, screenX/3, "WELCOME TO SNAKE GAME!");
    WINDOW *menuWin = newwin(screenY, screenX, 0, 0);  // height, width, row location, column location to centre window
-   box(menuWin, '|', '_');  
    refresh();
-   getch();
-   wrefresh(menuWin);
-   getch();
+   box(menuWin, 0, 0);  
 
+   /* To do: 
+   
+   Print snake shape for main menu
 
+   */
+
+   mvwprintw(menuWin, screenY/3, screenX/3, "WELCOME TO SNAKE GAME!");
    keypad(menuWin, true);
 
-   char *menuOptions[] = {"START GAME", "HOW TO PLAY", "SCORE BOARD"};
+   char *menuOptions[] = {"START GAME", "HOW TO PLAY", "LEADERBOARD"};
    int highlighted = 0;
 
    while(true) {
@@ -82,10 +82,10 @@ void mainMenu() {
             wattron(menuWin, A_REVERSE);
          }
 
-         mvwprintw(menuWin, i+1, 1, menuOptions[i]);
+         mvwprintw(menuWin, screenY/2+i+1, screenX/3, menuOptions[i]);
          wattroff(menuWin, A_REVERSE);
       }
-      int userInput = wgetch(menuWin);  // wgetch(menuWin) also refreshes screen here
+      int userInput = wgetch(menuWin);
 
       switch (userInput)
       {
@@ -108,7 +108,6 @@ void mainMenu() {
       }
    }
 
-   getch();
    // NCURSES END
    endwin();  //deallocates memory and ends ncurses...
 }
@@ -121,10 +120,10 @@ void instructionsMenu(void) {
 
    // Initialize instructions screen
    int yMax, xMax; 
-   getyx(stdscr, &yMax, &xMax);
+   getyx(stdscr, yMax, xMax);
 
    // int height, int width, int starty, int startx
-   WINDOW *instructionsMenu = new(yMax, xMax, 0, 0);
+   WINDOW *instructionsMenu = newwin(yMax, xMax, 0, 0);
    refresh();
    box(instructionsMenu, 0, 0);
    wrefresh(instructionsMenu);
@@ -137,8 +136,8 @@ void instructionsMenu(void) {
                         "PRESS ESC TO RETURN"};
 
 
-   int listSize = sizeof(gameInstructions) / gameInstructions[0];
-   for (int i = 0; i < gameInstructions)
+   // int listSize = sizeof(gameInstructions) / gameInstructions[0];
+   // for (int i = 0; i < gameInstructions)
 
    
    getch();
@@ -146,7 +145,8 @@ void instructionsMenu(void) {
 
 int main(int argc, char **argv) { 
    mainMenu();   
-   instructionsMenu();
 
    return 0;
 }
+
+
