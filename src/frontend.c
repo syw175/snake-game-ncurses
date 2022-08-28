@@ -1,7 +1,12 @@
-/* Program: snake-game in c
-   Author: Steven Wong
-   Date last modified: May 19, 2022
-*/
+/*
+ * Filename: frontend.c
+ *
+ * Description: Implementation of functions related to the View aspect 
+ *              of the snake game in terms of the MVC design pattern.
+ * 
+ * Author: Steven Wong
+ * Last Modified: August 27, 2022
+ */
 
 // ncurses documentation ----->>>>> https://jbwyatt.com/ncurses.html#using
 
@@ -10,11 +15,6 @@
 // Print high scores: Retro style just like in the old arcades 
 // Draw fruit items randomly within the screen 
 // Draw Bonus Item Sportically within the screen 
-
-
-#include <stdio.h> 
-#include <ncurses.h>
-#include <string.h>
 
    // move the cursor to the specified location, taking 2 parameters y, then x 
    // move(20, 20);  // 
@@ -41,9 +41,7 @@
       // do something
    // }
 
-
-   // halfdelay(int tenths of sec) -> prevents infinite buffering for getch(); returns -1 or ERR if no input is given...
-
+#include "frontend.h"
 
 void mainMenu() { 
 
@@ -62,12 +60,6 @@ void mainMenu() {
    WINDOW *menuWin = newwin(screenY, screenX, 0, 0);  // height, width, row location, column location to centre window
    refresh();
    box(menuWin, 0, 0);  
-
-   /* To do: 
-   
-   Print snake shape for main menu
-
-   */
 
    mvwprintw(menuWin, screenY/3, screenX/3, "WELCOME TO SNAKE GAME!");
    keypad(menuWin, true);
@@ -133,14 +125,7 @@ void instructionsMenu(void) {
                         "3. BONUS ITEM DOUBLES FOOD AND SPEED FOR 60SEC",
                         "PRESS ESC TO RETURN"};
 
-
    // int listSize = sizeof(gameInstructions) / gameInstructions[0];
    // for (int i = 0; i < gameInstructions)
    getch();
-}
-
-int main(int argc, char **argv) { 
-   mainMenu();   
-
-   return 0;
 }
