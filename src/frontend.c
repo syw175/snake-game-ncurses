@@ -10,12 +10,6 @@
 
 // ncurses documentation ----->>>>> https://jbwyatt.com/ncurses.html#using
 
-// To Do
-// Print menu of how to play: Move snake with the arrow keys, Eat the food to grow, Eat the apple to double speed temporarily for 30s and grow events are doubled 
-// Print high scores: Retro style just like in the old arcades 
-// Draw fruit items randomly within the screen 
-// Draw Bonus Item Sportically within the screen 
-
    // move the cursor to the specified location, taking 2 parameters y, then x 
    // move(20, 20);  // 
 
@@ -30,53 +24,76 @@
    // print text in the window at the current position
    // wprintw(menuWin, "This is a window");
 
-   // // clears the screen
-   // clear();
+   // noecho();   // character from input will not show up 
+   // curs_set(0);  // Hide insertion point from the user
+   // cbreak();   // removes input buffer, ctrl + c to exit
 
-   // int c = getch();  // get char... waits for user input, returns int value of that key...
-   // printw("%d", c);
-
-   // int c = wgetch(inputwin);
-   // if (c==KEY_UP) { 
-      // do something
-   // }
 
 #include "frontend.h"
+#include "backend.h"
 
-void mainMenu() { 
 
-   // Ncurses start 
+// Allocate memory for a ncurses window and return a pointer to it
+WINDOW* initializeWindow()
+{
+   // Initialize ncurses, sets up memory, and clears the screen
+   initscr();  
    clear();
-   initscr();  // initialize ncurses, sets up memory, and clears the screen
-   noecho();   // character from input will not show up 
-   cbreak();   // removes input buffer, ctrl + c to exit
-   curs_set(0);  // Hide insertion point from the user
+   refresh();
 
-   // Get dimensions of screen
+   // Get the dimensions of the client computer's screen
    int screenX, screenY;  
    getmaxyx(stdscr, screenY, screenX);
 
-   // Initialize game board
-   WINDOW *menuWin = newwin(screenY, screenX, 0, 0);  // height, width, row location, column location to centre window
+   // Initialize game board and return it
+   WINDOW *window = newwin(screenY, screenX, 0, 0);  // height, width, row location, column location to centre window 
+
+   // Return the window
+   return window;
+}
+
+// Clear the board and redraw the borders
+void clearBoard(WINDOW *board)
+{
+   // Ensure that a valid pointer was given
+   if (board == NULL) return; 
+
+   // Clear the board and draw a box around the board using the default characters
+   clear();
+   box(board, 0, 0);  
    refresh();
-   box(menuWin, 0, 0);  
+}
 
-   mvwprintw(menuWin, screenY/3, screenX/3, "WELCOME TO SNAKE GAME!");
-   keypad(menuWin, true);
-
+// NEEDS WORK
+void drawMenu(WINDOW *board)
+{
+   // Menu Options
    char *menuOptions[] = {"START GAME", "HOW TO PLAY", "LEADERBOARD"};
+   int screenX, screenY;  
    int highlighted = 0;
 
+   // Ensure that a valid pointer was given
+   if (board == NULL) return;
+
+   // Clear the menu and draw a box 
+   clearBoard(board);
+   keypad(board, true);
+
+   // Get the dimensions of the client computer's screen
+   getmaxyx(stdscr, screenY, screenX);
+
+   // Print the options to the screen and allow navigation through the menu
+   mvwprintw(board, screenY/3, screenX/3, "WELCOME TO SNAKE GAME!");
    while(true) {
       for (int i = 0; i < 3; i++) { 
          if(i == highlighted) { 
-            wattron(menuWin, A_REVERSE);
+            wattron(board, A_REVERSE);
          }
 
-         mvwprintw(menuWin, screenY/2+i+1, screenX/3, menuOptions[i]);
-         wattroff(menuWin, A_REVERSE);
+         mvwprintw(board, screenY/2+i+1, screenX/3, menuOptions[i]);
+         wattroff(board, A_REVERSE);
       }
-      int userInput = wgetch(menuWin);
+      int userInput = wgetch(board);
 
       switch (userInput)
       {
@@ -94,38 +111,29 @@ void mainMenu() {
             break;
       }
 
+      // If "Enter" is pressed.. break out of the menu
       if (userInput == 10) { 
          break;
       }
    }
-
-   // NCURSES END
-   endwin();  //deallocates memory and ends ncurses...
 }
 
-void instructionsMenu(void) { 
-   initscr();
-   noecho();
-   cbreak();
+// Draw game instructions onto a game board
+void drawInstructions(WINDOW *board) 
+{
+   // Ensure that a valid pointer was given
+   if (board == NULL) return;
 
    // Initialize instructions screen
-   int yMax, xMax; 
-   getyx(stdscr, yMax, xMax);
+   // int yMax, xMax; 
+   // getyx(stdscr, yMax, xMax);
 
-   // int height, int width, int starty, int startx
-   WINDOW *instructionsMenu = newwin(yMax, xMax, 0, 0);
-   refresh();
-   box(instructionsMenu, 0, 0);
-   wrefresh(instructionsMenu);
+   // Clear the screen 
+   clearBoard(board);
 
-
-   char *gameInstructions[] = {"HOW TO PLAY",
-                        "1. MOVE WITH THE ARROW KEYS", 
-                        "2. EAT THE FOOD (#) TO GROW",
-                        "3. BONUS ITEM DOUBLES FOOD AND SPEED FOR 60SEC",
-                        "PRESS ESC TO RETURN"};
-
-   // int listSize = sizeof(gameInstructions) / gameInstructions[0];
-   // for (int i = 0; i < gameInstructions)
-   getch();
+   // char *gameInstructions[] = {"HOW TO PLAY",
+   //                      "1. MOVE WITH THE ARROW KEYS", 
+   //                      "2. EAT THE FOOD (#) TO GROW",
+   //                      "3. BONUS ITEM DOUBLES FOOD AND SPEED FOR 60SEC",
+   //                      "PRESS ESC TO RETURN"};
 }
