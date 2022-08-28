@@ -16,7 +16,6 @@
 #include <ncurses.h>
 #include <string.h>
 
-
    // move the cursor to the specified location, taking 2 parameters y, then x 
    // move(20, 20);  // 
 
@@ -113,7 +112,6 @@ void mainMenu() {
 }
 
 void instructionsMenu(void) { 
-
    initscr();
    noecho();
    cbreak();
@@ -138,8 +136,6 @@ void instructionsMenu(void) {
 
    // int listSize = sizeof(gameInstructions) / gameInstructions[0];
    // for (int i = 0; i < gameInstructions)
-
-   
    getch();
 }
 
@@ -148,5 +144,3 @@ int main(int argc, char **argv) {
 
    return 0;
 }
-
-
