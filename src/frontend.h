@@ -14,15 +14,20 @@
 #include <string.h>
 
 
+// Add a char at a given x and y position
+void addElement(WINDOW *board, char element, int xPosition, int yPosition);
+
 // Initialize the game board
 WINDOW* initializeWindow(); 
 
 // Clear the screen and redraw the borders
 void clearBoard(WINDOW *board);
 
-
 // Draw the main menu information and loop until an option is chosen
 void drawMenu(WINDOW *board);
 
 // Draw the gameplay instructions onto the screen and return to menu upon pressing 1
 void drawInstructions(WINDOW *board);
+
+// Get input from user and return a chtype
+chtype getInput(WINDOW *board);

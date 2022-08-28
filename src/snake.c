@@ -25,6 +25,11 @@ int main(int argc, char **argv)
 
    drawMenu(gameWindow);
    getch();
+
+   clearBoard(gameWindow);
+   addElement(gameWindow, 'x', 5, 5);
+   getch();
+
    endwin();
    return 0;
 }

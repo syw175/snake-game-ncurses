@@ -33,8 +33,27 @@
 #include "backend.h"
 
 
+// Add element at a given position on the board
+void addElement(WINDOW *board, char element, int xPosition, int yPosition)
+{
+   // Ensure that a valid pointer was given
+   if (!board) return;
+
+   // Get the dimensions of the client computer's screen
+   int screenX, screenY;  
+   getmaxyx(stdscr, screenY, screenX);
+
+   // Check that the position is in range 
+   if (xPosition > screenX || yPosition > screenY) return;
+   if (xPosition < 0 || yPosition < 0) return;
+
+   // Add the character at the position
+   mvaddch(yPosition, xPosition, element);
+}
+
+
 // Allocate memory for a ncurses window and return a pointer to it
-WINDOW* initializeWindow()
+WINDOW* initializeWindow(void)
 {
    // Initialize ncurses, sets up memory, and clears the screen
    initscr();  
@@ -56,7 +75,7 @@ WINDOW* initializeWindow()
 void clearBoard(WINDOW *board)
 {
    // Ensure that a valid pointer was given
-   if (board == NULL) return; 
+   if (!board) return; 
 
    // Clear the board and draw a box around the board using the default characters
    clear();
@@ -73,7 +92,7 @@ void drawMenu(WINDOW *board)
    int highlighted = 0;
 
    // Ensure that a valid pointer was given
-   if (board == NULL) return;
+   if (!board) return;
 
    // Clear the menu and draw a box 
    clearBoard(board);
@@ -122,7 +141,7 @@ void drawMenu(WINDOW *board)
 void drawInstructions(WINDOW *board) 
 {
    // Ensure that a valid pointer was given
-   if (board == NULL) return;
+   if (!board) return;
 
    // Initialize instructions screen
    // int yMax, xMax; 
@@ -136,4 +155,14 @@ void drawInstructions(WINDOW *board)
    //                      "2. EAT THE FOOD (#) TO GROW",
    //                      "3. BONUS ITEM DOUBLES FOOD AND SPEED FOR 60SEC",
    //                      "PRESS ESC TO RETURN"};
+}
+
+// Get input from user and return a chtype
+chtype getInput(WINDOW *board)
+{
+   // Validate that board is valid
+   if (!board) return;
+
+   // Return the input as a chtype
+   return wgetch(board);
 }
