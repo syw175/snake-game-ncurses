@@ -17,15 +17,23 @@
 // create new instance of the game
 int main(int argc, char **argv)
 {
+   // Think about refactoring the screen dimensions X/Y and saving it
+   // Currently lots of redunancy in the functions
 
+
+   // Testing the initialize of a Ncurses window 
    WINDOW *gameWindow = initializeWindow();
    getch();
+
+   // Testing the clearBoard() function
    clearBoard(gameWindow);
    getch();
 
+   // Testing the draw menu function
    drawMenu(gameWindow);
    getch();
 
+   // Testing the add Element function
    clearBoard(gameWindow);
    addElement(gameWindow, 'x', 5, 5);
    getch();
