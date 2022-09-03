@@ -6,7 +6,7 @@
  *              MVC design pattern.
  * 
  * Author: Steven Wong
- * Last Modified: August 30, 2022
+ * Last Modified: September 3, 2022
  */
 
 
@@ -17,8 +17,6 @@
 #include<stdlib.h> 
 
 #include "backend.h"
-
-
 #include "frontend.h" // May not need here 
 
 // Create an object on the heap
@@ -68,7 +66,29 @@ gameObject_t *createSnake()
 // TO DO LATER
 status_t moveSnake(board_t *board)
 {
-    return ALIVE;
+    // Get the head of the snake
+    gameObject_t *head = board->snake;
+
+    // Add a new head to the snake based on the direction of the current head
+    gameObject_t *nextHead = malloc(sizeof(gameObject_t));
+
+    // If malloc failed, return DEAD
+    // if (!nextHead) return DEAD;
+
+    // Get the current direction of the head
+    direction_t direction = head->direction;
+
+    switch (d)
+    {
+    case /* constant-expression */:
+        /* code */
+        break;
+    
+    default:
+        break;
+    }    
+
+
 }
 
 // Check if an object has collided with the snake
@@ -95,11 +115,86 @@ int randomCoordinate(int min, int max)
 // Add food to the board
 void addFood(board_t *board)
 {
+    // Create a new food object
+    gameObject_t *food = createObject(randomCoordinate(1, board->maxX), randomCoordinate(1, board->maxY), '*');
+
+    // Check if the food has collided with the snake
+    while (isCollision(food, board->snake))
+    {
+        // If it has, generate a new random coordinate
+        food->xPosition = randomCoordinate(1, board->maxX);
+        food->yPosition = randomCoordinate(1, board->maxY);
+    }
+
+    // Set the food pointer to the new food object
+    board->food = food;
+    return;
 
 }
 
+// Instantiate a new board for the game
+board_t* createBoard(int maxX, int maxY)
+{
+    // Generate a random seed for later use
+    srand(time(NULL));
 
+    // Create a new board on the heap
+    board_t *newBoard = malloc(sizeof(board_t));
 
+    // Ensure that memory was correctly allocated before proceeding
+    if (!newBoard) return NULL;
 
+    // Set the max x and y values
+    newBoard->maxX = maxX;
+    newBoard->maxY = maxY;
 
+    // Create the snake and food
+    newBoard->snake = createSnake();
+    newBoard->food = createObject(0, 0, 'F');
 
+    // Ensure that memory was correctly allocated before proceeding
+    if (!newBoard->snake || !newBoard->food) return NULL;
+
+    // Set the score and game status
+    newBoard->score = 0;
+    newBoard->gameStatus = ALIVE;
+
+    // Return the new board
+    return newBoard;
+}
+
+// DONE
+// Check if a game object is facing the opposite direction of the snake
+int oppositeDirection(gameObject_t *nextHead, gameObject_t *snake)
+{
+    // If the next direction is the opposite of the current direction, return 1
+    if (nextHead->direction == UP && snake->direction == DOWN) return 1;
+    if (nextHead->direction == DOWN && snake->direction == UP) return 1;
+
+    // If the next direction is the opposite of the current direction, return 1
+    if (nextHead->direction == LEFT && snake->direction == RIGHT) return 1;
+    if (nextHead->direction == RIGHT && snake->direction == LEFT) return 1;
+
+    // Otherwise, return 0
+    return 0;
+}
+
+// DONE
+// Destroy the board and free any memory associated with the game 
+void destroyBoard(board_t *board)
+{
+    // Free the food 
+    free(board->food);
+
+    // Free the snake
+    gameObject_t *current = board->snake;
+    while (current != NULL)
+    {
+        gameObject_t *next = current->next;
+        free(current);
+        current = next;
+    }
+
+    // Free the board
+    free(board);
+}

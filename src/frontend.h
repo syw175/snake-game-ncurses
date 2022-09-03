@@ -39,13 +39,16 @@ void exitGame(void);
 void startGame(WINDOW *board);
 
 // Print a string in the middle of the window
-void printStringInMiddle(WINDOW *win, int centreY, int centreX, char* string);
+void printStringInMiddle(WINDOW *win, int startY, int startX, int width, char* string);
 
 // Get the current Direction
-direction_t getDirection(direction_t currentDirection);
+// enum direction_t getDirection(enum direction_t currentDirection);
 
 // Refresh the board and display its contents
-void refreshBoard(board_t *board, WINDOW *win);
+// void refreshBoard(enum board_t *board, WINDOW *win);
 
 // Get input from user and return a chtype
 chtype getInput(WINDOW *board);
+
+// Add element at a given position on the board
+void addElement(WINDOW *board, char element, int xPosition, int yPosition);

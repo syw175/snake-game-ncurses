@@ -14,7 +14,8 @@ typedef enum direction_t {
     UP, 
     DOWN, 
     LEFT, 
-    RIGHT
+    RIGHT,
+    HOLD
 } direction_t; 
 
 typedef enum status_t {
@@ -36,12 +37,8 @@ typedef struct gameObject_t {
 typedef struct {
     gameObject_t *snake;
     gameObject_t *food;
-    
-    // Do I need this? ..
     int maxX;
     int maxY;
-    // Do I need this ^
-
     int score;
     status_t gameStatus; 
 
@@ -62,7 +59,6 @@ int isCollision(gameObject_t *object, gameObject_t *snake);
 
 // Generate a random integer between min and max
 int randomCoordinate(int min, int max);
-
 
 // Add food to the board
 void addFood(board_t *board);
