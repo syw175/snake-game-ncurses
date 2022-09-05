@@ -19,6 +19,7 @@
 #include "backend.h"
 #include "frontend.h" // May not need here 
 
+// DONE
 // Create an object on the heap
 gameObject_t *createObject(int xValue, int yValue, char symbol)
 {
@@ -36,7 +37,7 @@ gameObject_t *createObject(int xValue, int yValue, char symbol)
     return newObject;
 }
 
-
+// DONE
 // Instantiate a new snake for the game
 gameObject_t *createSnake()
 {
@@ -62,42 +63,98 @@ gameObject_t *createSnake()
     return head;
 }
 
+// DONE
 // Move the snake based on user input
-// TO DO LATER
-status_t moveSnake(board_t *board)
+status_t moveSnake(gameBoard_t *board)
 {
-    // Get the head of the snake
-    gameObject_t *head = board->snake;
+    gameObject_t *head = board -> snake;
+	gameObject_t *next_head = malloc(sizeof(gameObject_t));
+	direction_t d = board -> snake -> direction;
 
-    // Add a new head to the snake based on the direction of the current head
-    gameObject_t *nextHead = malloc(sizeof(gameObject_t));
+    // Get the next position of the head of the snake
+	switch(d) {		
+		case UP:
+			next_head -> xPosition 			= (head -> xPosition);
+			next_head -> yPosition 			= (head -> yPosition) - 1;
+			next_head -> symbol = '^';
+			break;
+		case DOWN:
+			next_head -> xPosition 			= (head -> xPosition);
+			next_head -> yPosition 			= (head -> yPosition) + 1;
+			next_head -> symbol = 'v';
+			break;
+		case LEFT:
+			next_head -> xPosition 			= (head -> xPosition) - 1;
+			next_head -> yPosition 			= (head -> yPosition);
+			next_head -> symbol = '<';
+			break;
+		case RIGHT:
+			next_head -> xPosition 			= (head -> xPosition) + 1;
+			next_head -> yPosition 			= (head -> yPosition);
+			next_head -> symbol = '>';
+			break;
+		default:
+			next_head -> xPosition 			= (head -> xPosition);
+			next_head -> yPosition 			= (head -> yPosition);
+			next_head -> symbol = head -> symbol;
+			break;
+	}
 
-    // If malloc failed, return DEAD
-    // if (!nextHead) return DEAD;
-
-    // Get the current direction of the head
-    direction_t direction = head->direction;
-
-    switch (d)
+    // Check for collision with the food
+    if (next_head -> xPosition == board -> food -> xPosition && next_head -> yPosition == board -> food -> yPosition) 
     {
-    case /* constant-expression */:
-        /* code */
-        break;
-    
-    default:
-        break;
-    }    
+        // Add the food to the snake
+        next_head -> next = head;
+        board -> snake = next_head;
 
+        // Update the score
+        board -> score += 1;
 
+        // Create a new food item
+        board -> food = createObject(rand() % board -> maxX, rand() % board -> maxY, 'o');
+    } 
+    else 
+    {
+        // Check for collision with the snake
+        gameObject_t *current = head;
+        while (current != NULL) 
+        {
+            if (next_head -> xPosition == current -> xPosition && next_head -> yPosition == current -> yPosition) 
+            {
+                return DEAD;
+            }
+            current = current -> next;
+        }
+
+        // Check for collision with the walls
+        if (next_head -> xPosition < 0 || next_head -> xPosition >= board -> maxX || next_head -> yPosition < 0 || next_head -> yPosition >= board -> maxY) 
+        {
+            return DEAD;
+        }
+
+        // Move the snake
+        next_head -> next = head;
+        board -> snake = next_head;
+
+        // Remove the tail of the snake
+        gameObject_t *current = head;
+        while (current -> next -> next != NULL) 
+        {
+            current = current -> next;
+        }
+        free(current -> next);
+        current -> next = NULL;
+    }
 }
 
-// Check if an object has collided with the snake
-int isCollision(gameObject_t *object, gameObject_t *snake)
+// DONE
+// Check if a new object is in the same place as the snake
+int isCollision(gameObject_t *newObject, gameObject_t *snake)
 {
     // Iterate through the snake, if the objects position hits the object, return true...
     for (gameObject_t *current = snake; current != NULL; current = current->next)
     {
-        if (current->xPosition == object->xPosition && current->yPosition == object->yPosition)
+        if (current->xPosition == newObject->xPosition && current->yPosition == newObject->yPosition)
         {
             return true;
         }
@@ -106,24 +163,26 @@ int isCollision(gameObject_t *object, gameObject_t *snake)
     return false;
 }
 
+// DONE
 // Generate a random integer between the minimum and maximum values
 int randomCoordinate(int min, int max)
 {
     return max + rand() / (RAND_MAX / (min - max + 1) + 1);
 }
 
+// DONE
 // Add food to the board
-void addFood(board_t *board)
+void addFood(gameBoard_t *board)
 {
     // Create a new food object
-    gameObject_t *food = createObject(randomCoordinate(1, board->maxX), randomCoordinate(1, board->maxY), '*');
+    gameObject_t *food = createObject(randomCoordinate(1, board->maxX-3), randomCoordinate(1, board->maxY-3), '*');
 
     // Check if the food has collided with the snake
     while (isCollision(food, board->snake))
     {
         // If it has, generate a new random coordinate
-        food->xPosition = randomCoordinate(1, board->maxX);
-        food->yPosition = randomCoordinate(1, board->maxY);
+        food->xPosition = randomCoordinate(1, board->maxX-3);
+        food->yPosition = randomCoordinate(1, board->maxY-3);
     }
 
     // Set the food pointer to the new food object
@@ -132,32 +191,29 @@ void addFood(board_t *board)
 
 }
 
+// DONE
 // Instantiate a new board for the game
-board_t* createBoard(int maxX, int maxY)
+gameBoard_t* createBoard(int maxX, int maxY, enum option_t option)
 {
     // Generate a random seed for later use
     srand(time(NULL));
 
-    // Create a new board on the heap
-    board_t *newBoard = malloc(sizeof(board_t));
+    // Create a new board object
+    gameBoard_t *newBoard = malloc(sizeof(gameBoard_t));
 
     // Ensure that memory was correctly allocated before proceeding
     if (!newBoard) return NULL;
 
-    // Set the max x and y values
+    // Set the board's properties and create the snake/food
+    newBoard->snake = createSnake();
     newBoard->maxX = maxX;
     newBoard->maxY = maxY;
-
-    // Create the snake and food
-    newBoard->snake = createSnake();
-    newBoard->food = createObject(0, 0, 'F');
-
-    // Ensure that memory was correctly allocated before proceeding
-    if (!newBoard->snake || !newBoard->food) return NULL;
-
-    // Set the score and game status
+    newBoard->food = createObject(maxX, maxY, '#');
     newBoard->score = 0;
-    newBoard->gameStatus = ALIVE;
+    newBoard->option = option;
+
+    // Set the snake's direction to a default direction
+    newBoard->snake->direction = HOLD;
 
     // Return the new board
     return newBoard;
@@ -181,7 +237,7 @@ int oppositeDirection(gameObject_t *nextHead, gameObject_t *snake)
 
 // DONE
 // Destroy the board and free any memory associated with the game 
-void destroyBoard(board_t *board)
+void destroyBoard(gameBoard_t *board)
 {
     // Free the food 
     free(board->food);

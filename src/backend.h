@@ -23,27 +23,30 @@ typedef enum status_t {
     DEAD
 } status_t; 
 
-// Struct to represent game objects with an (x,y) coordinate in the game
+typedef enum option_t {
+    OPEN, 
+    CLOSED
+};
+
+// Representation of game objects
 typedef struct gameObject_t {
     int xPosition;
     int yPosition;
     char symbol;
+    time_t time;
     direction_t direction;
     struct gameObject_t *next;
 } gameObject_t;
 
-
-// Struct to represent the game board 
+// Representation of the game board
 typedef struct {
     gameObject_t *snake;
     gameObject_t *food;
+    int score;
     int maxX;
     int maxY;
-    int score;
-    status_t gameStatus; 
-
-} board_t;
-
+    enum option_t option;
+} gameBoard_t;
 
 // Create a game object such as a food item or new snake item
 gameObject_t *createObject(int xValue, int yValue, char symbol);
@@ -52,7 +55,7 @@ gameObject_t *createObject(int xValue, int yValue, char symbol);
 gameObject_t *createSnake(); 
 
 // Move the snake based on user input and return dead or alive 
-status_t moveSnake(board_t *board); 
+status_t moveSnake(gameBoard_t *board); 
 
 // Check if there is the object has collided with the snake 
 int isCollision(gameObject_t *object, gameObject_t *snake);
@@ -61,17 +64,16 @@ int isCollision(gameObject_t *object, gameObject_t *snake);
 int randomCoordinate(int min, int max);
 
 // Add food to the board
-void addFood(board_t *board);
+void addFood(gameBoard_t *board);
 
 // Create a board on the heap 
-board_t* createBoard(int maxX, int maxY);
+gameBoard_t* createBoard(int maxX, int maxY, enum option_t option);
 
 // Opposite direction check
-// May not need
-int oppositeDirection(gameObject_t *next, gameObject_t *snake); 
+int oppositeDirection(gameObject_t *nextHead, gameObject_t *snake); 
 
 // Destroy the board and free any memory associated with the game 
-void destroyBoard(board_t *board);
+void destroyBoard(gameBoard_t *board);
 
 
 
