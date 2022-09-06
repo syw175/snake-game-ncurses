@@ -5,12 +5,14 @@
  *              of the snake game in terms of the MVC design pattern.
  * 
  * Author: Steven Wong
- * Last Modified: September 5, 2022
+ * Last Modified: September 06, 2022
  */
 
 
 #include "frontend.h"
 #include "backend.h"
+
+#define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 
 
 // DONE
@@ -27,6 +29,84 @@ WINDOW* initializeWindow(int height, int width, int centreY, int centreX)
 // NEEDS WORK
 void drawMainMenu(void)
 {
+   ITEM **s_items;
+   ITEM *cur;
+   MENU *options_menu;
+   int n_choices, i, ch, exit_con;
+   WINDOW *options_menu_win;
+
+   exit_con = 0;
+
+   /* Create menu */
+   options_menu = new_menu((ITEM **)s_items);
+
+   /* Set menu option to not show description */
+   menu_opts_off(options_menu, O_SHOWDESC);
+
+   /* Create the window to be associated with the menu */
+   options_menu_win = initializeWindow(8, 20, (LINES - 8) /2, (COLS - 20) /2);
+   keypad(options_menu_win, TRUE);
+      
+   /* Set main window and sub window */
+   set_menu_win(options_menu, options_menu_win);
+   set_menu_sub(options_menu, derwin(options_menu_win, 4, 15, 3, 4));
+
+   /* Set menu mark to the string " * " */
+   set_menu_mark(options_menu, " * ");
+
+   while(!exit_con)
+   {
+      /* Display the options menu */
+      post_menu(options_menu);
+      wrefresh(options_menu_win);
+      box(options_menu_win, 0, 0);
+      printStringInMiddle(options_menu_win, 1, 0, 20, "Pick an option:");
+      mvwaddch(options_menu_win, 2, 0, ACS_LTEE);
+      mvwhline(options_menu_win, 2, 1, ACS_HLINE, 18);
+      mvwaddch(options_menu_win, 2, 19, ACS_RTEE);
+
+      ch = wgetch(options_menu_win);
+      switch(ch) {
+      case KEY_DOWN:
+         menu_driver(options_menu, REQ_DOWN_ITEM);
+         break;
+      case KEY_UP:
+         menu_driver(options_menu, REQ_UP_ITEM);
+         break;
+      case 10: {  /* Enter */
+         cur = current_item(options_menu);
+         int *option = item_userptr(cur);
+         if(*option == -1)
+         {
+            exit_con = TRUE;
+            break;
+         }
+         
+         unpost_menu(options_menu);
+         wrefresh(options_menu_win);
+         WINDOW *full_screen;
+         int x, y;
+         getmaxyx(stdscr, y, x);
+         full_screen = initializeWindow(y, x, 0, 0);
+         startGame(full_screen);
+         wclear(full_screen);
+         wrefresh(full_screen);
+
+         break;
+      }
+      }
+   }
+
+   /* Menu no longer used so free memory */
+   unpost_menu(options_menu);
+   free_menu(options_menu); 
+   for(i = 0; i < n_choices; ++i)
+   {
+      free_item(s_items[i]);
+   }
+   wrefresh(options_menu_win);
+   delwin(options_menu_win);
+   return;   
 }
 
 // DONE

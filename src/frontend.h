@@ -5,7 +5,7 @@
  *              of the snake game in terms of the MVC design pattern.
  * 
  * Author: Steven Wong
- * Last Modified: September 5, 2022
+ * Last Modified: September 06, 2022
  */
 
 #include <unistd.h>
