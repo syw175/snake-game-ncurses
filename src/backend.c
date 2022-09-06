@@ -17,7 +17,6 @@
 #include<stdlib.h> 
 
 #include "backend.h"
-#include "frontend.h" // May not need here 
 
 // DONE
 // Create an object on the heap
@@ -137,7 +136,7 @@ status_t moveSnake(gameBoard_t *board)
         board -> snake = next_head;
 
         // Remove the tail of the snake
-        gameObject_t *current = head;
+        current = head;
         while (current -> next -> next != NULL) 
         {
             current = current -> next;
@@ -145,6 +144,7 @@ status_t moveSnake(gameBoard_t *board)
         free(current -> next);
         current -> next = NULL;
     }
+    return ALIVE;
 }
 
 // DONE
@@ -156,11 +156,11 @@ int isCollision(gameObject_t *newObject, gameObject_t *snake)
     {
         if (current->xPosition == newObject->xPosition && current->yPosition == newObject->yPosition)
         {
-            return true;
+            return 1;
         }
     }
     // At this point, there are no more snake elements to check and there is no collisions
-    return false;
+    return 0;
 }
 
 // DONE
@@ -193,7 +193,7 @@ void addFood(gameBoard_t *board)
 
 // DONE
 // Instantiate a new board for the game
-gameBoard_t* createBoard(int maxX, int maxY, enum option_t option)
+gameBoard_t* createBoard(int maxX, int maxY)
 {
     // Generate a random seed for later use
     srand(time(NULL));
@@ -210,7 +210,6 @@ gameBoard_t* createBoard(int maxX, int maxY, enum option_t option)
     newBoard->maxY = maxY;
     newBoard->food = createObject(maxX, maxY, '#');
     newBoard->score = 0;
-    newBoard->option = option;
 
     // Set the snake's direction to a default direction
     newBoard->snake->direction = HOLD;

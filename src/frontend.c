@@ -5,7 +5,7 @@
  *              of the snake game in terms of the MVC design pattern.
  * 
  * Author: Steven Wong
- * Last Modified: August 30, 2022
+ * Last Modified: September 5, 2022
  */
 
 
@@ -13,6 +13,7 @@
 #include "backend.h"
 
 
+// DONE
 // Allocate memory for a ncurses window and return a pointer to it
 WINDOW* initializeWindow(int height, int width, int centreY, int centreX)
 {
@@ -24,113 +25,126 @@ WINDOW* initializeWindow(int height, int width, int centreY, int centreX)
 }
 
 // NEEDS WORK
-void drawMainMenu(WINDOW *board)
+void drawMainMenu(void)
 {
-   // Menu Options
-   char *menuOptions[] = {"START GAME", "HOW TO PLAY", "LEADERBOARD"};
-   int screenX, screenY;  
-   int highlighted = 0;
-
-   // Ensure that a valid pointer was given
-   if (!board) return;
-
-   // Clear the menu and draw a box 
-   clearBoard(board);
-   keypad(board, true);
-
-   // Get the dimensions of the client computer's screen
-   getmaxyx(stdscr, screenY, screenX);
-
-   // Print the options to the screen and allow navigation through the menu
-   mvwprintw(board, screenY/3, screenX/3, "WELCOME TO SNAKE GAME!");
-   while(true) {
-      for (int i = 0; i < 3; i++) { 
-         if(i == highlighted) { 
-            wattron(board, A_REVERSE);
-         }
-
-         mvwprintw(board, screenY/2+i+1, screenX/3, menuOptions[i]);
-         wattroff(board, A_REVERSE);
-      }
-      int userInput = wgetch(board);
-
-      switch (userInput)
-      {
-         case KEY_UP:
-            if (highlighted > 0) { 
-               highlighted--;
-            }
-            break;
-         case KEY_DOWN:  
-            if (highlighted < 2) {
-               highlighted++;
-            } 
-            break;
-         default:
-            break;
-      }
-
-      // If "Enter" is pressed.. break out of the menu
-      if (userInput == 10) { 
-         break;
-      }
-   }
 }
 
+// DONE
 // Draw the gameplay instructions onto the screen and return to menu upon pressing 1
-void drawInstructionsMenu(WINDOW *board) 
+void drawInstructionsMenu(void) 
 {
-   // Ensure that a valid pointer was given
-   if (!board) return;
+   // Initialize the window
+   WINDOW *controls_win;  
+   int ch;
+   controls_win = initializeWindow(10, 30, (LINES - 9) /2, (COLS - 30) /2);
+   
+   // Enable the keypad for the user's terminal
+   keypad(controls_win, TRUE);
 
-   // Initialize instructions screen
-   // int yMax, xMax; 
-   // getyx(stdscr, yMax, xMax);
+   // Print the instructions
+   box(controls_win, 0, 0);
+   printStringInMiddle(controls_win, 1, 0, 30, "How to Play");
+   mvwaddch(controls_win, 2, 0, ACS_LTEE);
+   mvwhline(controls_win, 2, 1, ACS_HLINE, 28);
+   mvwaddch(controls_win, 2, 29, ACS_RTEE);  
+   mvwprintw(controls_win, 3, 1, "Move with the arrows keys");
+   mvwprintw(controls_win, 4, 1, "Eat the food to grow.");
+   mvwprintw(controls_win, 5, 1, "Food is '#'");
 
-   // Clear the screen 
-   clearBoard(board);
+   // Print the controls
+   mvwaddch(controls_win, 7, 0, ACS_LTEE);
+   mvwhline(controls_win, 7, 1, ACS_HLINE, 28);
+   mvwaddch(controls_win, 7, 29, ACS_RTEE);
+   wattron(controls_win , A_STANDOUT);
+   mvwprintw(controls_win, 8, 11, "* Back");
+   wattroff(controls_win ,A_STANDOUT);
+   wrefresh(controls_win);
 
-   // char *gameInstructions[] = {"HOW TO PLAY",
-   //                      "1. MOVE WITH THE ARROW KEYS", 
-   //                      "2. EAT THE FOOD (#) TO GROW",
-   //                      "3. BONUS ITEM DOUBLES FOOD AND SPEED FOR 60SEC",
-   //                      "PRESS ESC TO RETURN"};
-}
+   // Wait for the user to press enter
+   while((ch = wgetch(controls_win)) != 10 ) {
+   }
 
-// Draw the historical record of highscores located in the current directory
-// Function stub: Remove when I have successfully implemented this function
-void drawHighScoresMenu(WINDOW *board)
-{
-   // Function stub: Remove when I have successfully implemented this function]
+   // Clear and delete the window
+   wclear(controls_win);
+   wrefresh(controls_win);
+   delwin(controls_win);
    return;
 }
 
-// Clear the board and redraw the borders
-void clearBoard(WINDOW *board)
-{
-   // Ensure that a valid pointer was given
-   if (!board) return; 
-
-   // Clear the board and draw a box around the board using the default characters
-   clear();
-   box(board, 0, 0);  
-   refresh();
-}
-
+// DONE
 // Exit the game 
 void exitGame(void)
 {
+   // Exit the game
+   endwin();
+
+   // Exit the program
+   exit(0);
    // Function stub: Remove when I have successfully implemented this function
-   return;
 }
 
+// DONE
 // Start the main game loop
-void startGame(WINDOW *board)
+void startGame(WINDOW *window)
 {
-   // Function stub: Remove when I have successfully implemented this function
+   // Initialize variables
+   int start_x, start_y, height, width;
+   WINDOW *game_win;
+   height = 20; width = 50;
+
+   // Get the middle of the screen
+   start_y = (LINES - height) / 2;  
+   start_x = (COLS - width) / 2;
+
+   // Create a new window
+   game_win = initializeWindow(height, width, start_y, start_x);
+   gameBoard_t *board = createBoard(width, height);
+   status_t status = ALIVE;
+
+   // While the snake is alive, keep playing
+   while(status == ALIVE) 
+   {
+      werase(game_win);
+      mvwprintw(window ,start_y - 2, start_x, "Your score: %ld", board -> score);
+    
+      wrefresh(window);
+
+      if(board -> snake -> direction == RIGHT || board -> snake -> direction == LEFT) 
+         timeout(100);
+      else  
+         timeout(125);
+
+      displayBoard(board, game_win);
+      wrefresh(game_win);
+      board -> snake -> direction = getDirection(board -> snake -> direction);
+
+      //  If the snake's direction is HOLD, then pause the game
+      if(board -> snake -> direction == HOLD) 
+      {
+         mvwprintw(window ,start_y - 2, start_x + 32, " Game is paused... ");
+         continue;
+      }
+      // Otherwise, indicate to user instructions to pause game
+      else
+      {
+         mvwprintw(window ,start_y - 2, start_x + 32, "Press 'p' to pause ");
+      }
+
+      // Move the snake
+      status = moveSnake(board);
+   }
+
+   // Clear the window
+   destroyBoard(board); 
+   wclear(game_win); 
+   wrefresh(game_win); 
+
+   // Deallocate the memory for the game window
+   delwin(game_win);
    return;
 }
 
+// DONE
 // Function adapted from the Ncurses HOW-TO page
 // Source: https://github.com/nasciiboy/NCURSES-Programming-HOWTO/blob/master/ncurses_programs/JustForFun/tt.c
 void printStringInMiddle(WINDOW *win, int startY, int startX, int width, char* string)
@@ -164,31 +178,28 @@ void printStringInMiddle(WINDOW *win, int startY, int startX, int width, char* s
 	refresh();
 }
 
+// DONE
+// Display the snake, food, and score on the screen
+void displayBoard(gameBoard_t *board, WINDOW *win)
+{
+   gameObject_t *head = board->snake;
+   // Display the food
+  mvwaddch(win, board -> food -> yPosition, board -> food -> xPosition, board -> food -> symbol);
 
-void print_in_middle(int startx, int starty, int width, char *string, WINDOW *win)
-{	int length, x, y;
-	float temp;
+   // Display the snake 
+   while(head) 
+   {
+      mvwaddch(win, head -> yPosition, head -> xPosition, head -> symbol);
+      head = head -> next;
+   }
 
-	if(win == NULL)
-		win = stdscr;
-	getyx(win, y, x);
-	if(startx != 0)
-		x = startx;
-	if(starty != 0)
-		y = starty;
-	if(width == 0)
-		width = 80;
-
-	length = strlen(string);
-	temp = (width - length)/ 2;
-	x = startx + (int)temp;
-	mvwprintw(win, y, x, "%s", string);
-	refresh();
+   // Display the game borders
+   box(win, 0 , 0); 
 }
 
+// DONE
 // Get the current Direction
 // May need to address the case where user does not enter a key at all
-// Untested
 direction_t getDirection(direction_t currentDirection)
 {
    int userInput = getch();
@@ -217,37 +228,12 @@ direction_t getDirection(direction_t currentDirection)
    else {
       return currentDirection;
    }
-
 }
 
-// Refresh the board and display its contents
-void refreshBoard(board_t *board, WINDOW *win)
-{
-   // Function stub: Remove when I have successfully implemented this function
-   return;
-}
-
+// DONE
 // Get input from user and return a chtype
 chtype getInput(WINDOW *board)
 {
     // Return the input as a chtype
    return wgetch(board);
-}
-
-// Add element at a given position on the board
-void addElement(WINDOW *board, char element, int xPosition, int yPosition)
-{
-   // Ensure that a valid pointer was given
-   if (!board) return;
-
-   // Get the dimensions of the client computer's screen
-   int screenX, screenY;  
-   getmaxyx(stdscr, screenY, screenX);
-
-   // Check that the position is in range 
-   if (xPosition > screenX || yPosition > screenY) return;
-   if (xPosition < 0 || yPosition < 0) return;
-
-   // Add the character at the position
-   mvaddch(yPosition, xPosition, element);
 }

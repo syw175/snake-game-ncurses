@@ -9,6 +9,8 @@
  * Last Modified: August 30, 2022
  */
 
+#ifndef BACKEND_H
+#define BACKEND_H
 
 typedef enum direction_t {
     UP, 
@@ -23,17 +25,11 @@ typedef enum status_t {
     DEAD
 } status_t; 
 
-typedef enum option_t {
-    OPEN, 
-    CLOSED
-};
-
 // Representation of game objects
 typedef struct gameObject_t {
     int xPosition;
     int yPosition;
     char symbol;
-    time_t time;
     direction_t direction;
     struct gameObject_t *next;
 } gameObject_t;
@@ -45,7 +41,6 @@ typedef struct {
     int score;
     int maxX;
     int maxY;
-    enum option_t option;
 } gameBoard_t;
 
 // Create a game object such as a food item or new snake item
@@ -67,13 +62,15 @@ int randomCoordinate(int min, int max);
 void addFood(gameBoard_t *board);
 
 // Create a board on the heap 
-gameBoard_t* createBoard(int maxX, int maxY, enum option_t option);
+gameBoard_t* createBoard(int maxX, int maxY);
 
 // Opposite direction check
 int oppositeDirection(gameObject_t *nextHead, gameObject_t *snake); 
 
 // Destroy the board and free any memory associated with the game 
 void destroyBoard(gameBoard_t *board);
+
+#endif
 
 
 
